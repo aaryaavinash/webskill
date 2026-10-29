@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -16,10 +16,16 @@ test('installs selected project skills, shares common target, and preserves an e
     const claude = join(dir, '.claude/skills/cinematic-landing/SKILL.md');
     assert.match(await readFile(codex, 'utf8'), /name: cinematic-landing/);
     assert.equal(await readFile(codex, 'utf8'), await readFile(claude, 'utf8'));
+    const names = (await readdir(resolve('skills'), { withFileTypes: true })).filter(entry => entry.isDirectory()).map(entry => entry.name);
+    for (const name of names) {
+      assert.match(await readFile(join(dir, '.agents/skills', name, 'SKILL.md'), 'utf8'), new RegExp(`name: ${name}`));
+      assert.equal(await readFile(join(dir, '.agents/skills', name, 'SKILL.md'), 'utf8'), await readFile(join(dir, '.claude/skills', name, 'SKILL.md'), 'utf8'));
+    }
     run = spawnSync(process.execPath, args, { encoding: 'utf8' });
     assert.equal(run.status, 0, run.stderr);
     assert.match(run.stdout, /SKIP/);
     assert.equal((await readFile(codex, 'utf8')).includes('name: cinematic-landing'), true);
+    assert.equal((await readdir(join(dir, '.agents/skills'))).length, names.length);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 

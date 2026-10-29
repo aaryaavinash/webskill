@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { cp, stat, mkdir } from 'node:fs/promises';
+import { cp, stat, mkdir, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -9,6 +9,7 @@ import { intro, outro, note, multiselect, select, confirm, text, spinner, cancel
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const skill = 'cinematic-landing';
 const source = join(root, 'skills', skill);
+const skills = (await readdir(join(root, 'skills'), { withFileTypes: true })).filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
 const home = homedir();
 const clients = [
   { id: 'codex', name: 'Codex', project: '.agents/skills', global: '.agents/skills' },
@@ -33,7 +34,8 @@ const option = key => { const i = argv.indexOf(key); return i < 0 ? null : argv[
 const has = key => argv.includes(key);
 const help = () => {
   console.log('webskill install [--agents codex,claude,...|all] [--scope project|global] [--dir PATH] [--target SKILLS_DIR] [--yes] [--dry-run] [--accessible]');
-  console.log('Guided setup for cinematic-landing. Existing skill folders are never overwritten.');
+  // ORIGINAL (preserved, not deleted — disabled by comment): console.log('Guided setup for cinematic-landing. Existing skill folders are never overwritten.');
+  console.log('Guided setup for the Webskill cinematic landing-page skill set. Existing skill folders are never overwritten.');
 };
 if (has('--help') || has('-h') || command === 'help') { help(); process.exit(0); }
 if (command !== 'install' && command !== 'setup') { help(); process.exit(1); }
@@ -50,8 +52,10 @@ const checked = async prompt => { const value = await prompt; if (isCancel(value
 try {
   await stat(join(source, 'SKILL.md'));
   if (interactive) {
-    intro('Install cinematic-landing');
-    note('A focused skill for cinematic landing pages, honest loaders, scroll choreography and interactive 3D.', 'What you are installing');
+    // ORIGINAL (preserved, not deleted — disabled by comment): intro('Install cinematic-landing');
+    intro('Install Webskill');
+    // ORIGINAL (preserved, not deleted — disabled by comment): note('A focused skill for cinematic landing pages, honest loaders, scroll choreography and interactive 3D.', 'What you are installing');
+    note(`${skills.length} skills covering 3D worlds, scroll, loaders, interaction, interface, motion, and rendered review.`, 'What you are installing');
     if (!ids && !custom) {
       const detected = clients.filter(c => existsSync(join(project, c.project)) || existsSync(join(home, c.global))).map(c => c.id);
       note(detected.length ? detected.map(id => clients.find(c => c.id === id).name).join(', ') : 'No existing skill directories found. Every supported agent is selectable.', 'Existing skill directories');
@@ -86,15 +90,30 @@ try {
   }
   const plan = [];
   for (const [target, names] of targetMap) {
-    let existing = false;
-    try { existing = (await stat(target)).isDirectory(); if (!existing) throw new Error(`Target is a file: ${target}`); }
-    catch (e) { if (e.code !== 'ENOENT') throw e; }
-    plan.push({ target, names, existing });
+    // ORIGINAL (preserved, not deleted — disabled by comment): let existing = false; try { existing = (await stat(target)).isDirectory(); if (!existing) throw new Error(`Target is a file: ${target}`); } catch (e) { if (e.code !== 'ENOENT') throw e; } plan.push({ target, names, existing });
+    for (const name of skills) {
+      const destination = join(dirname(target), name);
+      const source = join(root, 'skills', name);
+      await stat(join(source, 'SKILL.md'));
+      let existing = false;
+      try { existing = (await stat(destination)).isDirectory(); if (!existing) throw new Error(`Target is a file: ${destination}`); }
+      catch (e) { if (e.code !== 'ENOENT') throw e; }
+      plan.push({ target: destination, source, names, existing });
+    }
   }
-  const description = plan.map(p => `${p.existing ? 'SKIP' : 'ADD '}  ${p.names.join(' + ')}\n      ${p.target}`).join('\n\n');
+  // ORIGINAL (preserved, not deleted — disabled by comment): const description = plan.map(p => `${p.existing ? 'SKIP' : 'ADD '}  ${p.names.join(' + ')}\n      ${p.target}`).join('\n\n');
+  const groups = new Map();
+  for (const p of plan) {
+    const base = dirname(p.target);
+    const group = groups.get(base) || { names: p.names, add: 0, skip: 0 };
+    group[p.existing ? 'skip' : 'add']++;
+    groups.set(base, group);
+  }
+  const description = [...groups].map(([base, group]) => `${group.add ? 'ADD ' : 'SKIP'}  ${group.names.join(' + ')} · ${group.add} new / ${group.skip} present\n      ${base}`).join('\n\n');
   if (interactive) {
     note(description, 'Review changes');
-    if (!await checked(confirm({ message: `Install to ${plan.filter(p => !p.existing).length} new location(s)?`, initialValue: true }))) exitCancel();
+    // ORIGINAL (preserved, not deleted — disabled by comment): if (!await checked(confirm({ message: `Install to ${plan.filter(p => !p.existing).length} new location(s)?`, initialValue: true }))) exitCancel();
+    if (!await checked(confirm({ message: `Install ${plan.filter(p => !p.existing).length} skill folders?`, initialValue: true }))) exitCancel();
   } else console.log(`Plan (${scope}):\n${description}\n`);
   if (has('--dry-run')) { outro('Dry run complete. No files changed.'); process.exit(0); }
   const spin = interactive ? spinner() : null;
@@ -103,7 +122,8 @@ try {
   for (const p of plan) {
     if (p.existing) continue;
     await mkdir(dirname(p.target), { recursive: true });
-    await cp(source, p.target, { recursive: true, force: false, errorOnExist: true });
+    // ORIGINAL (preserved, not deleted — disabled by comment): await cp(source, p.target, { recursive: true, force: false, errorOnExist: true });
+    await cp(p.source, p.target, { recursive: true, force: false, errorOnExist: true });
     installed++;
   }
   spin?.stop('Installation complete');
