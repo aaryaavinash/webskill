@@ -1,7 +1,7 @@
 {
-  "name": "@aaryaavinash/webskill",
-  "version": "0.1.0",
-  "description": "Interactive installer for cinematic landing-page agent skills",
+  "name": "webskill",
+  "version": "0.2.0",
+  "description": "Guided installer for cinematic landing-page Agent Skills",
   "type": "module",
   "bin": {
     "webskill": "./bin/webskill.mjs"
@@ -17,5 +17,11 @@
   "license": "MIT",
   "scripts": {
     "test": "node --test"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

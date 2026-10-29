@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -30,5 +30,21 @@ test('installs to a custom agent directory', async () => {
     const run = spawnSync(process.execPath, [bin, '--target', target, '--yes'], { encoding: 'utf8' });
     assert.equal(run.status, 0, run.stderr);
     assert.match(await readFile(join(target, 'cinematic-landing', 'SKILL.md'), 'utf8'), /name: cinematic-landing/);
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test('dry run makes no changes and global scope resolves under home', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'webskill-home-'));
+  try {
+    const args = [bin, 'install', '--agents', 'claude', '--scope', 'global', '--dry-run'];
+    const env = { ...process.env, HOME: dir };
+    let run = spawnSync(process.execPath, args, { encoding: 'utf8', env });
+    assert.equal(run.status, 0, run.stderr);
+    assert.match(run.stdout, /Dry run complete/);
+    const target = join(dir, '.claude/skills/cinematic-landing/SKILL.md');
+    await assert.rejects(stat(target), { code: 'ENOENT' });
+    run = spawnSync(process.execPath, args.slice(0, -1).concat('--yes'), { encoding: 'utf8', env });
+    assert.equal(run.status, 0, run.stderr);
+    assert.match(await readFile(target, 'utf8'), /name: cinematic-landing/);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
