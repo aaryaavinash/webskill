@@ -4,13 +4,13 @@ A focused Agent Skill for cinematic landing pages: an honest loading sequence, a
 
 ## Install
 
-The npm command is prepared but the first registry publication is waiting on npm's passkey/2FA approval:
+Install from npm:
 
 ```bash
-npx webskill@latest install
+npx @zyrix/webskill@latest install
 ```
 
-The same installer is available now from GitHub:
+The same installer is also available from GitHub:
 
 ```bash
 npx --allow-git=all github:aaryaavinash/webskill install
@@ -22,13 +22,13 @@ Built-in destinations: Codex, Claude Code, Antigravity App/IDE, Antigravity CLI,
 
 ```bash
 # Review only
-npx webskill@latest install --agents codex,claude --scope project --dry-run
+npx @zyrix/webskill@latest install --agents codex,claude --scope project --dry-run
 
 # Unattended project install
-npx webskill@latest install --agents codex,claude --scope project --dir . --yes
+npx @zyrix/webskill@latest install --agents codex,claude --scope project --dir . --yes
 
 # Any other agent
-npx webskill@latest install --target /path/to/agent/skills --yes
+npx @zyrix/webskill@latest install --target /path/to/agent/skills --yes
 ```
 
 Restart the selected agent, then ask it to build a cinematic landing page. The entrypoint is [`skills/cinematic-landing/SKILL.md`](skills/cinematic-landing/SKILL.md); five references walk through a concept brief, page/scene architecture, loader and motion, rendered QA, and mechanisms learned from all 20 Dioramas examples.

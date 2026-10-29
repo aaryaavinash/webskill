@@ -1,5 +1,5 @@
 {
-  "name": "webskill",
+  "name": "@zyrix/webskill",
   "version": "0.2.0",
   "description": "Guided installer for cinematic landing-page Agent Skills",
   "type": "module",
