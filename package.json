@@ -1,0 +1,21 @@
+{
+  "name": "@aaryaavinash/webskill",
+  "version": "0.1.0",
+  "description": "Interactive installer for cinematic landing-page agent skills",
+  "type": "module",
+  "bin": {
+    "webskill": "./bin/webskill.mjs"
+  },
+  "files": [
+    "bin",
+    "skills",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  }
+}
