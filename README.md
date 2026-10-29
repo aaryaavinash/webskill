@@ -2,6 +2,8 @@
 
 A focused Agent Skill for cinematic landing pages: an honest loading sequence, authored scroll scenes, a meaningful interaction, accessible fallbacks, and deliberate visual review. The teaching method comes from studying the 20 worlds in [Dioramas](https://github.com/blendi-remade/dioramas); the skill does not copy their brands or assets.
 
+[Explore the Webskill story](https://aaryaavinash.github.io/webskill/) — a static, interactive introduction to the method, hosted from [`docs/`](docs/index.html) on GitHub Pages.
+
 ## Install
 
 Install from npm:
@@ -40,6 +42,7 @@ The agent starts with a complete page and a clear visual story. It chooses an as
 ## Development
 
 Node.js 20 or later is required. The CLI uses [`@clack/prompts`](https://github.com/bombshell-dev/clack) for the terminal setup flow.
+The website is plain HTML, CSS, and JavaScript in `docs/`; it has no build step or runtime dependency.
 
 ```bash
 npm ci
