@@ -24,7 +24,7 @@ const argv = process.argv.slice(2);
 const value = key => { const i = argv.indexOf(key); return i < 0 ? null : argv[i + 1]; };
 const flag = key => argv.includes(key);
 if (flag('--help') || flag('-h')) {
-  console.log('webskill [--agents codex,claude,...] [--scope project|global] [--dir PATH] [--yes]');
+  console.log('webskill [--agents codex,claude,...] [--scope project|global] [--dir PATH] [--target SKILLS_DIR] [--yes]');
   console.log('Install cinematic-landing for selected AI coding agents. Existing skills are left untouched.');
   process.exit(0);
 }
@@ -37,27 +37,31 @@ const art = String.raw`
 console.log(art);
 let selected = value('--agents')?.split(',').map(x => x.trim()).filter(Boolean);
 let scope = value('--scope');
+let customTarget = value('--target');
 const project = resolve(value('--dir') || process.cwd());
 const interactive = !flag('--yes') && process.stdin.isTTY;
 const rl = interactive ? createInterface({ input: process.stdin, output: process.stdout }) : null;
 try {
-  if (!selected) {
+  if (!selected && !customTarget) {
     if (!rl) throw new Error('Pass --agents when running without a terminal.');
     console.log('Choose agents (numbers separated by commas):');
     agents.forEach((a, i) => console.log(` ${String(i + 1).padStart(2)}  ${a[1]}`));
+    console.log(' 11  Other (custom skills directory)');
     console.log('  A  All listed agents');
     const answer = (await rl.question('Agents [1,2]: ')).trim();
-    selected = answer.toLowerCase() === 'a' ? agents.map(a => a[0]) : answer.split(',').map(n => agents[Number(n) - 1]?.[0]);
+    selected = answer.toLowerCase() === 'a' ? agents.map(a => a[0]) : answer.split(',').map(n => n.trim() === '11' ? 'custom' : agents[Number(n) - 1]?.[0]);
   }
-  if (!selected.length || selected.some(a => !agents.some(x => x[0] === a))) throw new Error('Invalid agent selection. Use --help for valid options.');
+  if (selected?.includes('custom') && !customTarget) customTarget = rl ? (await rl.question('Custom skills directory path: ')).trim() : null;
+  if ((!selected?.length && !customTarget) || selected?.some(a => a !== 'custom' && !agents.some(x => x[0] === a))) throw new Error('Invalid agent selection. Use --help for valid options.');
+  if (selected?.includes('custom') && !customTarget) throw new Error('Custom selection requires --target SKILLS_DIR.');
   if (!scope) scope = rl ? (await rl.question('Install to (p)roject or (g)lobal? [p]: ')).trim().toLowerCase() : 'project';
   scope = scope === 'g' ? 'global' : scope === 'p' || scope === '' ? 'project' : scope;
   if (!['project', 'global'].includes(scope)) throw new Error('Scope must be project or global.');
   await stat(join(source, 'SKILL.md'));
-  const targets = [...new Set(selected.map(id => {
+  const targets = [...new Set([...(selected || []).filter(id => id !== 'custom').map(id => {
     const row = agents.find(a => a[0] === id);
     return join(scope === 'global' ? homedir() : project, row[scope === 'global' ? 3 : 2], skill);
-  }))];
+  }), ...(customTarget ? [join(resolve(customTarget), skill)] : [])])];
   console.log(`\nSkill: ${skill}  ·  Scope: ${scope}`);
   targets.forEach(t => console.log(`  → ${t}`));
   if (rl && (await rl.question('Install? [Y/n]: ')).trim().toLowerCase() === 'n') process.exit(0);

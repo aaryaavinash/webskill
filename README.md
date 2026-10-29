@@ -7,15 +7,15 @@ A practical Agent Skill for building cinematic landing pages with real loading a
 From a terminal in your project:
 
 ```bash
-npx github:aaryaavinash/webskill
+npx --allow-git=all github:aaryaavinash/webskill
 ```
 
-The installer shows an ASCII menu, asks which agents to target, and installs `cinematic-landing` at project or global scope. It supports Codex, Claude Code, Antigravity App/IDE and CLI, Gemini CLI, Cursor, GitHub Copilot, OpenCode, Windsurf, and Cline. Project installs use each agent's skill directory; Codex and Antigravity share `.agents/skills`. Existing skill folders are skipped so the installer does not overwrite local work.
+The installer shows an ASCII menu, asks which agents to target, and installs `cinematic-landing` at project or global scope. It supports Codex, Claude Code, Antigravity App/IDE and CLI, Gemini CLI, Cursor, GitHub Copilot, OpenCode, Windsurf, and Cline. Choose **Other** to enter any agent's skills directory. Project installs use each agent's skill directory; Codex and Antigravity share `.agents/skills`. Existing skill folders are skipped so the installer does not overwrite local work. The `--allow-git=all` option permits npm to fetch this GitHub package on npm versions that disable Git packages by default.
 
 For automation:
 
 ```bash
-npx github:aaryaavinash/webskill --agents codex,claude --scope project --dir . --yes
+npx --allow-git=all github:aaryaavinash/webskill --agents codex,claude --scope project --dir . --yes
 ```
 
 Then ask your agent to create a cinematic landing page. The skill entrypoint is [`skills/cinematic-landing/SKILL.md`](skills/cinematic-landing/SKILL.md); its references cover the brief, scene build, loader/motion, QA, and all 20 source patterns. The skill is independent of the original Dioramas runtime and does not ship its models or fictional brands.

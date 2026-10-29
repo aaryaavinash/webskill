@@ -22,3 +22,13 @@ test('installs selected project skills, shares common target, and preserves an e
     assert.equal((await readFile(codex, 'utf8')).includes('name: cinematic-landing'), true);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
+
+test('installs to a custom agent directory', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'webskill-custom-'));
+  try {
+    const target = join(dir, 'my-agent', 'skills');
+    const run = spawnSync(process.execPath, [bin, '--target', target, '--yes'], { encoding: 'utf8' });
+    assert.equal(run.status, 0, run.stderr);
+    assert.match(await readFile(join(target, 'cinematic-landing', 'SKILL.md'), 'utf8'), /name: cinematic-landing/);
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
