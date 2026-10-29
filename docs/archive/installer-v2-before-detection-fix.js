@@ -6,7 +6,7 @@
 // import { dirname, join, resolve } from 'node:path';
 // import { fileURLToPath } from 'node:url';
 // import { intro, outro, note, multiselect, select, confirm, text, spinner, cancel, isCancel } from '@clack/prompts';
-// 
+//
 // const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // const skill = 'cinematic-landing';
 // const source = join(root, 'skills', skill);

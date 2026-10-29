@@ -5,7 +5,7 @@
 // import { dirname, join, resolve } from 'node:path';
 // import { fileURLToPath } from 'node:url';
 // import { createInterface } from 'node:readline/promises';
-// 
+//
 // const here = dirname(fileURLToPath(import.meta.url));
 // const skill = 'cinematic-landing';
 // const source = resolve(here, '..', 'skills', skill);
