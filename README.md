@@ -4,16 +4,8 @@ A focused Agent Skill for cinematic landing pages: an honest loading sequence, a
 
 ## Install
 
-The clean npm command below is prepared but awaits first publication to the npm registry:
-
 ```bash
 npx webskill@latest install
-```
-
-Until that publication, the same installer can be run directly from this GitHub repository:
-
-```bash
-npx --allow-git=all github:aaryaavinash/webskill install
 ```
 
 The guided setup shows an ASCII title, detects existing skill directories, lets you select agents with the arrow keys and Space, chooses project or global scope, previews every destination, and asks before writing. Existing skill folders are skipped. `--accessible` switches to sequential yes/no prompts. `--dry-run` prints the exact plan without changes.
