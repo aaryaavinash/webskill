@@ -4,7 +4,7 @@
   "description": "Guided installer for cinematic landing-page Agent Skills",
   "type": "module",
   "bin": {
-    "webskill": "./bin/webskill.mjs"
+    "webskill": "bin/webskill.mjs"
   },
   "files": [
     "bin",
